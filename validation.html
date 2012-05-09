@@ -1,0 +1,109 @@
+<style>
+.errorClass{border:1px solid red;}
+form{margin-bottom:100px;}
+</style>
+<form>
+  <p><label>username <input class='validate username' name='username' type='text' /><span/></label></p>
+  <p><label>password <input class='validate password' name='password' type='text' /><span/></label></p>
+  <p><label>password <input class='validate confirmPassword' name='confirmPassword' type='text' /><span/></label></p>
+   <input type="submit" name="g" value="Submit" id="g" />
+</form>
+ 
+<div id='results'>
+
+
+</div>
+
+<script>
+//external json file with all the errors
+var error = { 
+        "Class"   : "errorClass",
+        "username": {  
+                "usernameEmpty"     : "No Username Given." ,
+                "usernameCharLimit" : "Username is less than 3 Characters.", 
+                "usernameInvalid"   : "Username contains invalid characters."
+        },
+        "password" : {
+                "passwordEmpty"     : "No Password Given." ,
+                "passwordCharLimit" : "Password is less than 4 Characters.", 
+
+        },
+        "confirmPassword": {
+                "confirmPass"       : "Retyped password not same as password."
+        }
+    } ;
+</script>
+<script src='zepto.js'></script>
+<script>
+ 
+
+
+var user = { 
+
+    init: function(ele){ 
+
+            var results = this.validate(ele); 
+            $(ele).find('input').removeClass(error.Class); 
+            $(ele).find('span').empty(); 
+            $(results[1]).focus().addClass(error.Class).next('span').append(results[0]); 
+
+          return false;
+
+
+    },
+    validate: function (e) {  
+      
+      var query = e.serializeArray(), json = {} ,i ; 
+
+      for (i in query) {
+              json[query[i].name] = query[i].value
+            }
+
+      return ( 
+
+          (!(json.username += '') || json.username === '')      ?   [ error.username.usernameEmpty , ".username" ]  
+        : (json.username.length < 3)                            ?   [ error.username.usernameCharLimit , ".username" ] 
+        : (!/^([a-z0-9-_]+)$/i.test(json.username))             ?   [ error.username.usernameInvalid , ".username" ] 
+        : (!(json.username += '') || json.password === '')      ?   [ error.password.passwordEmpty , ".password" ] 
+        : (json.password.length < 4)                            ?   [ error.password.passwordCharLimit , ".password" ] 
+        : (json.cpassword != json.password)                     ?   [ error.confirmPassword.confirmPass , ".confirmPassword" ] 
+        : false
+      );
+    }
+    
+  }; 
+
+//using keyup
+$('.validate ').keyup(function() { 
+
+  user.init($('form'));
+  return false;
+
+});
+
+//using form submit
+$('form').submit(function() { 
+
+  user.init($(this));
+  return false;
+
+});
+
+
+
+
+
+
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
